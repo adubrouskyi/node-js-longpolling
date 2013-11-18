@@ -1,0 +1,54 @@
+<html>
+<head>
+    <title>Node.js longpolling test</title>
+    <script type="text/javascript">
+
+        var serverUrl = "http://192.168.1.155:8888";
+var num = 0;
+var start = -1;
+var multi = 200;
+        function callNode() {
+                var xmlhttp;
+                if (window.XMLHttpRequest)
+                {// code for IE7+, Firefox, Chrome, Opera, Safari
+                    xmlhttp=new XMLHttpRequest();
+                }
+                else
+                {// code for IE6, IE5
+                    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xmlhttp.onreadystatechange=function()
+                {
+                    if (xmlhttp.readyState==3)
+                    {
+                        var timeString = xmlhttp.responseText.substr(0, xmlhttp.responseText.length - 1);
+                        var lastTime = timeString.substr(timeString.lastIndexOf("/")+1);
+if(start==-1){
+start=Date.now()-multi;
+};			
+var end = Date.now();
+                        document.getElementById("serverTime").innerHTML=(num++) + " - since :"
++ ((end-start)/multi) + " - lost:" 
++ (((end-start)/multi)-(num));
+//                        document.getElementById("serverTime").innerHTML = xmlhttp.responseText;
+                    }
+                }
+
+                xmlhttp.open("GET",serverUrl+ ((/\?/).test(serverUrl) ? "&" : "?") + (new Date()).getTime(), true);
+                xmlhttp.setRequestHeader('long-polling', 'true');
+                xmlhttp.send();
+        }
+    </script>
+</head>
+<body>
+    <div id="serverTime"></div>
+
+    <script type="text/javascript">
+        window.onload=function(e){
+            setTimeout(callNode, 1);
+        }
+
+    </script>
+</body>
+
+</html>
